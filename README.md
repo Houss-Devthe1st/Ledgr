@@ -1,17 +1,17 @@
-# Ledgr
+# 📒 Ledgr
 
 A clean, offline-first subscription tracker for iOS and Android. Keep tabs on every recurring charge, monitor your monthly spend, and set a budget — all stored locally on your device.
 
-## Features
+## ✨ Features
 
-- **Subscription management** — Add, edit, and delete subscriptions with name, price, billing cycle, category, payment method, and renewal date
-- **Status tracking** — Mark subscriptions as active, paused, or cancelled; filter the list by status
-- **Budget cap** — Set a monthly spending limit and see a live progress bar across the app
-- **Insights dashboard** — Monthly spend summary, yearly projection, status breakdown donut chart, spend by category, top spenders, billing cycle breakdown, and upcoming 30-day renewals
-- **Offline-first** — All data is stored locally in SQLite; no internet connection required after sign-in
-- **Authentication** — Secure sign-in via Clerk (email, Google, etc.)
+- 📋 **Subscription management** — Add, edit, and delete subscriptions with name, price, billing cycle, category, payment method, and renewal date
+- 🔖 **Status tracking** — Mark subscriptions as active, paused, or cancelled; filter the list by status
+- 💰 **Budget cap** — Set a monthly spending limit and see a live progress bar across the app
+- 📊 **Insights dashboard** — Monthly spend summary, yearly projection, status breakdown donut chart, spend by category, top spenders, billing cycle breakdown, and upcoming 30-day renewals
+- 📴 **Offline-first** — All data is stored locally in SQLite; no internet connection required after sign-in
+- 🔐 **Authentication** — Secure sign-in via Clerk (email, Google, etc.)
 
-## Tech Stack
+## 🛠 Tech Stack
 
 | Layer | Library |
 |---|---|
@@ -24,7 +24,7 @@ A clean, offline-first subscription tracker for iOS and Android. Keep tabs on ev
 | Date handling | dayjs |
 | Language | TypeScript |
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -65,7 +65,7 @@ A clean, offline-first subscription tracker for iOS and Android. Keep tabs on ev
 
    Then press `a` for Android emulator, `i` for iOS simulator, or scan the QR code with [Expo Go](https://expo.dev/go).
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 app/
@@ -87,6 +87,6 @@ constants/           # Theme, icons, static data
 components/          # Reusable UI components (SubscriptionCard, etc.)
 ```
 
-## License
+## 📄 License
 
 MIT
