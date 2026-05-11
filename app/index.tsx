@@ -1,24 +1,12 @@
-import { Link } from "expo-router";
-import "@/global.css"
-import { Text, View } from "react-native";
+import { useAuth } from "@clerk/expo";
+import { Redirect } from "expo-router";
 
-export default function App() {
-  return (
-    <View className="flex-1 items-center justify-center bg-background">
-      <Text className="text-xl font-bold text-success">
-        Welcome to Nativewind!
-      </Text>
-      <Link href="/onboarding" className="mt-4 rounded bg-primary text-white p-4">Go to Onboarding </Link>
+export default function Index() {
+  const { isSignedIn, isLoaded } = useAuth();
 
-      <Link href="/(auth)/SignIn" className="mt-4 rounded bg-primary text-white p-4">Go to Sign In </Link>
+  if (!isLoaded) return null;
 
-      <Link href="/(auth)/SignUp" className="mt-4 rounded bg-primary text-white p-4">Go to Sign Up </Link>
+  if (isSignedIn) return <Redirect href="/(tabs)" />;
 
-      <Link href="./subscriptions/spotify" className="mt-4 rounded bg-primary text-white p-4">Spotify Subscription </Link>
-      <Link href={{ pathname: "./subscriptions/[id]", params: { id: "claude" } }} className="mt-4 rounded bg-primary text-white p-4">
-        Claude Max Subscription
-      </Link>
-
-    </View>
-  );
+  return <Redirect href="/(auth)/SignIn" />;
 }
