@@ -1,50 +1,92 @@
-# Welcome to your Expo app 👋
+# Ledgr
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A clean, offline-first subscription tracker for iOS and Android. Keep tabs on every recurring charge, monitor your monthly spend, and set a budget — all stored locally on your device.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Subscription management** — Add, edit, and delete subscriptions with name, price, billing cycle, category, payment method, and renewal date
+- **Status tracking** — Mark subscriptions as active, paused, or cancelled; filter the list by status
+- **Budget cap** — Set a monthly spending limit and see a live progress bar across the app
+- **Insights dashboard** — Monthly spend summary, yearly projection, status breakdown donut chart, spend by category, top spenders, billing cycle breakdown, and upcoming 30-day renewals
+- **Offline-first** — All data is stored locally in SQLite; no internet connection required after sign-in
+- **Authentication** — Secure sign-in via Clerk (email, Google, etc.)
+
+## Tech Stack
+
+| Layer | Library |
+|---|---|
+| Framework | React Native + Expo SDK 54 |
+| Routing | Expo Router 6 (file-based) |
+| Styling | NativeWind 5 (Tailwind CSS) |
+| Auth | Clerk (`@clerk/expo`) |
+| Database | expo-sqlite 16 |
+| Charts | react-native-svg |
+| Date handling | dayjs |
+| Language | TypeScript |
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org) 18+
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) (`npm install -g expo-cli`)
+- A [Clerk](https://clerk.com) account — free tier is sufficient
+
+### Setup
+
+1. **Clone the repo**
+
+   ```bash
+   git clone https://github.com/your-username/ledgr.git
+   cd ledgr
+   ```
+
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Configure Clerk**
+
+   Create a `.env` file in the project root:
+
+   ```env
+   EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+   ```
+
+   You can find your publishable key in the [Clerk dashboard](https://dashboard.clerk.com) under **API Keys**.
+
+4. **Start the development server**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   Then press `a` for Android emulator, `i` for iOS simulator, or scan the QR code with [Expo Go](https://expo.dev/go).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+```
+app/
+├── (auth)/          # Sign-in / sign-up screens
+├── (tabs)/          # Main tab screens (Home, Subscriptions, Insights, Settings)
+│   ├── index.tsx    # Home — balance card, overdue & upcoming renewals
+│   ├── Subscriptions.tsx
+│   ├── insights.tsx
+│   └── settings.tsx
+└── subscriptions/   # Create / edit subscription form
 
-## Get a fresh project
+lib/
+├── db/              # SQLite client, migrations, repositories
+├── subscriptions.tsx # Subscriptions context + hook
+├── budget.tsx       # Budget context + hook
+└── utils.ts         # Currency formatting, billing cycle helpers
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+constants/           # Theme, icons, static data
+components/          # Reusable UI components (SubscriptionCard, etc.)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## License
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+MIT
