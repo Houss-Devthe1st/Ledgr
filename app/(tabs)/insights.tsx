@@ -1,3 +1,4 @@
+import { useBudget } from "@/lib/budget";
 import { useSubscriptions } from "@/lib/subscriptions";
 import { formatCurrency, formatSubscriptionDateTime, toMonthly } from "@/lib/utils";
 import dayjs from "dayjs";
@@ -351,6 +352,7 @@ function UpcomingSpend({
 
 export default function Insights() {
   const { subscriptions, isLoading } = useSubscriptions();
+  const { monthlyBudget } = useBudget();
   const metrics = useInsightsMetrics(subscriptions);
 
   if (isLoading) return null;
@@ -375,6 +377,28 @@ export default function Insights() {
               monthlyTotal={metrics.monthlyTotal}
               activeCount={metrics.statusCounts.active}
             />
+
+            {monthlyBudget !== null && (() => {
+              const pct = (metrics.monthlyTotal / monthlyBudget) * 100;
+              const fillColor = pct >= 100 ? "#dc2626" : pct >= 75 ? "#f59e0b" : "#16a34a";
+              const overBy = metrics.monthlyTotal - monthlyBudget;
+              return (
+                <SectionCard title="Monthly Budget" subtitle={`${formatCurrency(metrics.monthlyTotal)} of ${formatCurrency(monthlyBudget)}`}>
+                  <View style={{ height: 12, borderRadius: 6, backgroundColor: "#e5e7eb" }}>
+                    <View style={{ height: 12, borderRadius: 6, width: `${Math.min(pct, 100)}%`, backgroundColor: fillColor }} />
+                  </View>
+                  {overBy > 0 ? (
+                    <Text className="text-xs font-sans-semibold text-destructive mt-2">
+                      Over budget by {formatCurrency(overBy)}
+                    </Text>
+                  ) : (
+                    <Text className="text-xs font-sans-medium text-muted-foreground mt-2">
+                      {formatCurrency(monthlyBudget - metrics.monthlyTotal)} remaining
+                    </Text>
+                  )}
+                </SectionCard>
+              );
+            })()}
 
             <SectionCard title="Portfolio" subtitle="Active · Paused · Cancelled">
               <StatusDonut statusCounts={metrics.statusCounts} />

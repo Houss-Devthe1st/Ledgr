@@ -11,11 +11,14 @@ export function getDb(): SQLite.SQLiteDatabase {
 export async function initDb(): Promise<void> {
   _db = SQLite.openDatabaseSync("ledgr.db");
   await _runMigrations(_db);
+  await _db.runAsync(
+    "CREATE TABLE IF NOT EXISTS budgets (key TEXT PRIMARY KEY NOT NULL, amount REAL NOT NULL)"
+  );
 }
 
 async function _runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
-  await db.execAsync(
-    "CREATE TABLE IF NOT EXISTS _migrations (version INTEGER PRIMARY KEY);"
+  await db.runAsync(
+    "CREATE TABLE IF NOT EXISTS _migrations (version INTEGER PRIMARY KEY)"
   );
 
   const row = await db.getFirstAsync<{ max_v: number | null }>(
@@ -25,13 +28,18 @@ async function _runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
 
   for (const { version, sql } of MIGRATIONS) {
     if (version > current) {
-      await db.withTransactionAsync(async () => {
-        await db.execAsync(sql);
-        await db.runAsync(
-          "INSERT INTO _migrations (version) VALUES (?)",
-          [version]
-        );
-      });
+      const stmts = sql
+        .split(";")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      for (const stmt of stmts) {
+        await db.runAsync(stmt);
+      }
+      await db.runAsync(
+        "INSERT INTO _migrations (version) VALUES (?)",
+        [version]
+      );
     }
   }
 }

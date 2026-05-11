@@ -1,10 +1,12 @@
+import images from "@/constants/images";
+import { useBudget } from "@/lib/budget";
 import { useClerk, useUser } from "@clerk/expo";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { styled } from "nativewind";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
-import images from "@/constants/images";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -23,6 +25,28 @@ export default function Settings() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();
+  const { monthlyBudget, isLoading: budgetLoading, setMonthlyBudget, clearMonthlyBudget } = useBudget();
+
+  const [draft, setDraft] = useState("");
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (!budgetLoading && !initialized.current) {
+      initialized.current = true;
+      setDraft(monthlyBudget !== null ? String(monthlyBudget) : "");
+    }
+  }, [budgetLoading, monthlyBudget]);
+
+  const handleBlur = () => {
+    const raw = draft.trim();
+    const n = parseFloat(raw);
+    if (raw !== "" && !isNaN(n) && n > 0) {
+      setMonthlyBudget(n);
+    } else {
+      clearMonthlyBudget();
+      setDraft("");
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -34,11 +58,14 @@ export default function Settings() {
   const email = user?.primaryEmailAddress?.emailAddress ?? "—";
   const username = user?.username ?? "—";
   const memberSince = user?.createdAt ? dayjs(user.createdAt).format("MMM D, YYYY") : "—";
-  const lastSignIn = user?.lastSignInAt ? dayjs(user.lastSignInAt).format("MMM D, YYYY [at] h:mm A") : "—";
+  const lastSignIn = user?.lastSignInAt
+    ? dayjs(user.lastSignInAt).format("MMM D, YYYY [at] h:mm A")
+    : "—";
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <ScrollView contentContainerClassName="p-5 pb-12">
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <ScrollView contentContainerClassName="p-5 pb-25" keyboardShouldPersistTaps="handled">
         <Text className="list-title mb-6">Settings</Text>
 
         {/* Profile hero */}
@@ -48,7 +75,7 @@ export default function Settings() {
           <Text className="text-sm font-sans-medium text-muted-foreground mt-1">{email}</Text>
         </View>
 
-        {/* Account details card */}
+        {/* Account */}
         <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground mb-3">
           Account
         </Text>
@@ -64,10 +91,39 @@ export default function Settings() {
           </View>
         </View>
 
+        {/* Budget */}
+        <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground mb-3">
+          Budget
+        </Text>
+        <View className="sub-card bg-card mb-8">
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12 }}>
+            <Text style={{ fontFamily: "sans-medium", fontSize: 16, color: "rgba(0,0,0,0.6)", flex: 1, marginRight: 12 }}>
+              Monthly cap
+            </Text>
+            <TextInput
+              value={draft}
+              onChangeText={setDraft}
+              onBlur={handleBlur}
+              placeholder="No limit"
+              placeholderTextColor="rgba(0,0,0,0.3)"
+              keyboardType="decimal-pad"
+              style={{
+                fontFamily: "sans-bold",
+                fontSize: 15,
+                color: "#081126",
+                textAlign: "right",
+                minWidth: 72,
+                maxWidth: 120,
+              }}
+            />
+          </View>
+        </View>
+
         <Pressable className="sub-cancel" onPress={handleSignOut}>
           <Text className="sub-cancel-text">Sign out</Text>
         </Pressable>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { initDb } from "@/lib/db/client";
+import { BudgetProvider } from "@/lib/budget";
 import { SubscriptionsProvider } from "@/lib/subscriptions";
 import "../global.css";
 
@@ -39,8 +40,6 @@ export default function RootLayout() {
   const isReady = fontsLoaded && dbReady;
 
   useEffect(() => {
-    // Hide splash once ready, or on DB error so the user isn't left on a
-    // blank screen — the error UI below will render instead.
     if (isReady || dbError) SplashScreen.hideAsync();
   }, [isReady, dbError]);
 
@@ -54,15 +53,17 @@ export default function RootLayout() {
     );
   }
 
-  // ClerkProvider always renders so session hydration runs in parallel with
-  // font + DB initialisation rather than sequentially after them.
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       {isReady ? (
         <SubscriptionsProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <BudgetProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+          </BudgetProvider>
         </SubscriptionsProvider>
-      ) : null}
+      ) : (
+        <Stack screenOptions={{ headerShown: false }} />
+      )}
     </ClerkProvider>
   );
 }
